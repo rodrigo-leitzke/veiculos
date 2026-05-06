@@ -1,0 +1,125 @@
+name: CI/CD — Cadastro de Veículos
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tarefa 6 — Matriz de versões (roda CI em Python 3.11 e 3.12)
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 1 — Build e Testes  (Tarefas 2, 3, 6)
+  # ───────────────────────────────────────────────────────────────────────────
+  build-and-test:
+    name: Build & Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]   # Tarefa 6
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5       # Tarefa 2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt  # Tarefa 2 — falha se der erro
+
+      - name: Executar testes com cobertura  # Tarefa 3
+        run: pytest tests/ -v --tb=short --cov=app --cov-report=xml
+        env:
+          API_KEY: ${{ secrets.API_KEY }}     # Tarefa 5
+
+      - name: Upload do relatório de cobertura  # Tarefa 4
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-py${{ matrix.python-version }}
+          path: coverage.xml
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 2 — Lint (roda em paralelo com build-and-test)   Tarefa 8
+  # ───────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint (flake8)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar flake8
+        run: pip install flake8
+
+      - name: Executar flake8
+        run: flake8 app/ run.py --max-line-length=100 --ignore=E501
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 3 — Publicar artefato do build   (Tarefa 4)
+  # Depende dos dois jobs acima  →  demonstra `needs`  (Tarefa 8)
+  # ───────────────────────────────────────────────────────────────────────────
+  package:
+    name: Empacotar artefato
+    runs-on: ubuntu-latest
+    needs: [build-and-test, lint]           # Tarefa 8 — dependência
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Criar pacote distribuível
+        run: |
+          mkdir -p dist
+          zip -r dist/cadastro-veiculos.zip app/ run.py requirements.txt
+
+      - name: Upload do pacote                # Tarefa 4
+        uses: actions/upload-artifact@v4
+        with:
+          name: cadastro-veiculos-package
+          path: dist/cadastro-veiculos.zip
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 4 — CD: Build e push Docker Hub   (Tarefa 9)
+  # Roda SOMENTE em push na main, após CI passar
+  # ───────────────────────────────────────────────────────────────────────────
+  docker:
+    name: Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: [package]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login no Docker Hub             # Tarefa 9
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}   # Tarefa 5
+          password: ${{ secrets.DOCKERHUB_TOKEN }}      # Tarefa 5
+
+      - name: Build e Push da imagem          # Tarefa 9
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/cadastro-veiculos:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/cadastro-veiculos:${{ github.sha }}
