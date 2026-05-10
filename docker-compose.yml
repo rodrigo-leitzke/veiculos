@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   api:
-    image: ${DOCKERHUB_USERNAME:-seuusuario}/cadastro-veiculos:latest
+    image: rodrigoleitzke/cadastro-veiculos:latest
     build:
       context: .
       dockerfile: Dockerfile

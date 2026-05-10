@@ -59,7 +59,7 @@ docker run -p 5000:5000 cadastro-veiculos
 ## Imagem Docker
 
 ```
-docker pull seuusuario/cadastro-veiculos:latest
+docker pull rodrigoleitzke/cadastro-veiculos:latest
 ```
 
 > 🔗 [Docker Hub — cadastro-veiculos](https://hub.docker.com/r/seuusuario/cadastro-veiculos)
