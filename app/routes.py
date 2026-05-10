@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from flask import Blueprint, request, jsonify
+
 from .database import get_db
 
 bp = Blueprint("veiculos", __name__, url_prefix="/veiculos")
@@ -8,18 +9,21 @@ bp = Blueprint("veiculos", __name__, url_prefix="/veiculos")
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
-PLACA_ANTIGA   = re.compile(r"^[A-Z]{3}-?\d{4}$")
+PLACA_ANTIGA = re.compile(r"^[A-Z]{3}-?\d{4}$")
 PLACA_MERCOSUL = re.compile(r"^[A-Z]{3}\d[A-Z]\d{2}$")
+
 
 def placa_valida(placa: str) -> bool:
     p = placa.upper().replace("-", "").replace(" ", "")
     return bool(
-        re.fullmatch(r"[A-Z]{3}\d{4}", p) or
-        re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
+        re.fullmatch(r"[A-Z]{3}\d{4}", p)
+        or re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
     )
+
 
 def normalizar_placa(placa: str) -> str:
     return placa.upper().replace(" ", "")
+
 
 def ano_valido(ano) -> bool:
     try:
