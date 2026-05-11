@@ -1,5 +1,7 @@
 from flask import Flask
+
 from .database import init_db
+
 
 def create_app(test_config=None):
     app = Flask(__name__)

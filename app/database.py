@@ -1,5 +1,4 @@
 import sqlite3
-import click
 from flask import g, current_app
 
 
@@ -19,21 +18,25 @@ def close_db(e=None):
         db.close()
 
 
+def create_tables(db):
+    db.executescript("""
+        CREATE TABLE IF NOT EXISTS veiculos (
+            id        INTEGER PRIMARY KEY AUTOINCREMENT,
+            placa     TEXT    NOT NULL UNIQUE,
+            marca     TEXT    NOT NULL,
+            modelo    TEXT    NOT NULL,
+            ano       INTEGER NOT NULL,
+            cor       TEXT    NOT NULL,
+            dono      TEXT    NOT NULL,
+            criado_em TEXT    NOT NULL DEFAULT (datetime('now'))
+        );
+    """)
+    db.commit()
+
+
 def init_db(app):
     app.teardown_appcontext(close_db)
 
     with app.app_context():
         db = get_db()
-        db.executescript("""
-            CREATE TABLE IF NOT EXISTS veiculos (
-                id        INTEGER PRIMARY KEY AUTOINCREMENT,
-                placa     TEXT    NOT NULL UNIQUE,
-                marca     TEXT    NOT NULL,
-                modelo    TEXT    NOT NULL,
-                ano       INTEGER NOT NULL,
-                cor       TEXT    NOT NULL,
-                dono      TEXT    NOT NULL,
-                criado_em TEXT    NOT NULL DEFAULT (datetime('now'))
-            );
-        """)
-        db.commit()
+        create_tables(db)

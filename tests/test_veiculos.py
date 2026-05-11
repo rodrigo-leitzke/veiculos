@@ -1,8 +1,10 @@
 """
 Testes unitários — Cadastro de Veículos
-Cobertura: cadastro, busca, validações e regras de negócio.
 """
+import os
+import tempfile
 import pytest
+
 from app import create_app
 
 
@@ -10,12 +12,18 @@ from app import create_app
 
 @pytest.fixture
 def app():
-    """Cria aplicação com banco em memória para cada teste."""
+    """Cria aplicação com banco em arquivo temporário para cada teste."""
+    db_fd, db_path = tempfile.mkstemp(suffix=".db")
+
     application = create_app({
         "TESTING": True,
-        "DATABASE": ":memory:",
+        "DATABASE": db_path,
     })
+
     yield application
+
+    os.close(db_fd)
+    os.unlink(db_path)
 
 
 @pytest.fixture
@@ -29,7 +37,7 @@ VEICULO_VALIDO = {
     "modelo": "Corolla",
     "ano":    2022,
     "cor":    "Prata",
-    "dono":   "João Silva",
+    "dono":   "Joao Silva",
 }
 
 
@@ -85,7 +93,7 @@ def test_buscar_veiculo_existente(client):
     client.post("/veiculos/", json=VEICULO_VALIDO)
     resp = client.get("/veiculos/ABC1234")
     assert resp.status_code == 200
-    assert resp.get_json()["dono"] == "João Silva"
+    assert resp.get_json()["dono"] == "Joao Silva"
 
 
 # ── Teste 7 — Busca por placa inexistente retorna 404 ────────────────────────
