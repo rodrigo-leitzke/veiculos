@@ -16,8 +16,8 @@ PLACA_MERCOSUL = re.compile(r"^[A-Z]{3}\d[A-Z]\d{2}$")
 def placa_valida(placa: str) -> bool:
     p = placa.upper().replace("-", "").replace(" ", "")
     return bool(
-        re.fullmatch(r"[A-Z]{3}\d{4}", p)
-        or re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
+        re.fullmatch(r"[A-Z]{3}\d{4}", p) or
+        re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
     )
 
 
