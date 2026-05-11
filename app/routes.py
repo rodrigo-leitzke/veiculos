@@ -7,18 +7,13 @@ from .database import get_db
 bp = Blueprint("veiculos", __name__, url_prefix="/veiculos")
 
 
-# ── helpers ──────────────────────────────────────────────────────────────────
-
-PLACA_ANTIGA = re.compile(r"^[A-Z]{3}-?\d{4}$")
-PLACA_MERCOSUL = re.compile(r"^[A-Z]{3}\d[A-Z]\d{2}$")
-
+# ── helpers ───────────────────────────────────────────────────────────────────
 
 def placa_valida(placa: str) -> bool:
     p = placa.upper().replace("-", "").replace(" ", "")
-    return bool(
-        re.fullmatch(r"[A-Z]{3}\d{4}", p) or
-        re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
-    )
+    antigo = re.fullmatch(r"[A-Z]{3}\d{4}", p)
+    mercosul = re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
+    return bool(antigo or mercosul)
 
 
 def normalizar_placa(placa: str) -> str:
@@ -85,9 +80,7 @@ def cadastrar():
 
 @bp.route("/<string:placa>", methods=["GET"])
 def buscar(placa: str):
-    """
-    GET /veiculos/<placa>
-    """
+    """GET /veiculos/<placa>"""
     placa = normalizar_placa(placa)
 
     if not placa_valida(placa):
@@ -104,7 +97,7 @@ def buscar(placa: str):
     return jsonify(dict(veiculo)), 200
 
 
-# ── endpoint 3 — listar todos (bônus) ────────────────────────────────────────
+# ── endpoint 3 — listar todos ────────────────────────────────────────────────
 
 @bp.route("/", methods=["GET"])
 def listar():
