@@ -14,7 +14,7 @@ def placa_valida(placa: str) -> bool:
     antigo = re.fullmatch(r"[A-Z]{3}\d{4}", p)
     mercosul = re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
     return bool(antigo or mercosul)
-
+#teste tarefa 7
 
 def normalizar_placa(placa: str) -> str:
     return placa.upper().replace(" ", "")
