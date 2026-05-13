@@ -7,15 +7,13 @@ from .database import get_db
 bp = Blueprint("veiculos", __name__, url_prefix="/veiculos")
 
 
-# helpers
+# ── helpers ───────────────────────────────────────────────────────────────────
 
-#teste tarefa 7
 def placa_valida(placa: str) -> bool:
     p = placa.upper().replace("-", "").replace(" ", "")
     antigo = re.fullmatch(r"[A-Z]{3}\d{4}", p)
     mercosul = re.fullmatch(r"[A-Z]{3}\d[A-Z]\d{2}", p)
     return bool(antigo or mercosul)
-
 
 def normalizar_placa(placa: str) -> str:
     return placa.upper().replace(" ", "")
@@ -29,7 +27,7 @@ def ano_valido(ano) -> bool:
         return False
 
 
-# endpoint 1 - cadastrar veiculo
+# ── endpoint 1 — cadastrar veículo ───────────────────────────────────────────
 
 @bp.route("/", methods=["POST"])
 def cadastrar():
@@ -77,7 +75,7 @@ def cadastrar():
     return jsonify(dict(veiculo)), 201
 
 
-# endpoint 2 - buscar por placa
+# ── endpoint 2 — buscar por placa ────────────────────────────────────────────
 
 @bp.route("/<string:placa>", methods=["GET"])
 def buscar(placa: str):
@@ -98,7 +96,7 @@ def buscar(placa: str):
     return jsonify(dict(veiculo)), 200
 
 
-# endpoint 3 - listar todos
+# ── endpoint 3 — listar todos ────────────────────────────────────────────────
 
 @bp.route("/", methods=["GET"])
 def listar():
