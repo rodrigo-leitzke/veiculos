@@ -1,4 +1,4 @@
-# 🚗 Cadastro de Veículos API
+# Cadastro de Veículos API
 
 API REST em Python/Flask para cadastro e consulta de veículos, com pipeline de CI/CD completo via GitHub Actions.
 
