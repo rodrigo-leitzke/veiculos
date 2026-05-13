@@ -9,7 +9,7 @@ bp = Blueprint("veiculos", __name__, url_prefix="/veiculos")
 
 # helpers
 
-
+#teste tarefa 7
 def placa_valida(placa: str) -> bool:
     p = placa.upper().replace("-", "").replace(" ", "")
     antigo = re.fullmatch(r"[A-Z]{3}\d{4}", p)
