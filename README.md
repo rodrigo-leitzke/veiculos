@@ -62,7 +62,7 @@ docker run -p 5000:5000 cadastro-veiculos
 docker pull rodrigoleitzke/cadastro-veiculos:latest
 ```
 
-> 🔗 [Docker Hub — cadastro-veiculos](https://hub.docker.com/r/seuusuario/cadastro-veiculos)
+> 🔗 [Docker Hub — cadastro-veiculos](https://hub.docker.com/r/rodrigoleitzke/cadastro-veiculos/tags)
 
 ## Testes
 
@@ -107,6 +107,8 @@ Qualquer pessoa com acesso ao repositório (presente ou futuro, via histórico g
 
 ## Integrantes
 
-- _Nome 1_
-- _Nome 2_
-- _Nome 3_
+- Rodrigo Leitzke
+- Ericke Rafael Maas
+- Leonardo Miguel Macaes
+- Luiz Henrique Bassani
+- Tiago Mendes Ouriques
