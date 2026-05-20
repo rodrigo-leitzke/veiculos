@@ -45,7 +45,7 @@ VEICULO_VALIDO = {
 
 def test_cadastrar_veiculo_sucesso(client):
     resp = client.post("/veiculos/", json=VEICULO_VALIDO)
-    assert resp.status_code == 201
+    assert resp.status_code == 999 #teste proposital
     data = resp.get_json()
     assert data["placa"] == "ABC1234"
     assert data["marca"] == "Toyota"
